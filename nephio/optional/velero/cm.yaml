@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero
+  labels:
+    pod-security.kubernetes.io/warn: "privileged"
+    pod-security.kubernetes.io/audit: "privileged"
+    pod-security.kubernetes.io/enforce: "privileged"
+---
+kind: ConfigMap
+metadata:
+  name: velero-values
+  namespace: velero
+apiVersion: v1
+data:
+  values.yaml: |
+    ##
+    ## Configuration settings related to Velero installation
+    ##
+
+    namespace: {}
+    image:
+      repository: velero/velero
+      tag: v1.16.0
+      pullPolicy: IfNotPresent
+
+    initContainers:
+      - name: velero-plugin-for-aws
+        image: velero/velero-plugin-for-aws:v1.2.1
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: /target
+            name: plugins
+
+    dnsPolicy: ClusterFirst
+    terminationGracePeriodSeconds: 3600
+
+    livenessProbe:
+      httpGet:
+        path: /metrics
+        port: http-monitoring
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 30
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+
+    readinessProbe:
+      httpGet:
+        path: /metrics
+        port: http-monitoring
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 30
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+
+    metrics:
+      enabled: true
+      scrapeInterval: 30s
+      scrapeTimeout: 10s
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8085"
+        prometheus.io/path: "/metrics"
+
+    upgradeCRDs: false
+    cleanUpCRDs: false
+
+    configuration:
+      backupStorageLocation:
+        - provider: aws
+          bucket: velero
+          accessMode: ReadWrite
+          config:
+            region: minio1
+            s3ForcePathStyle: true
+            s3Url: http://192.168.28.137:31845
+      disableInformerCache: false
+
+    rbac:
+      create: true
+      clusterAdministrator: true
+      clusterAdministratorName: cluster-admin
+
+    serviceAccount:
+      server:
+        create: true
+        automountServiceAccountToken: true
+
+    credentials:
+      useSecret: true
+      secretContents: 
+        cloud: |
+          [default]
+          aws_access_key_id=nephio1234
+          aws_secret_access_key=secret1234
+
+    backupsEnabled: true
+    snapshotsEnabled: false
+    features: EnableCSI
+
+    # Whether to deploy the node-agent daemonset.
+    deployNodeAgent: true
+
+    nodeAgent:
+      podVolumePath: /var/lib/kubelet/pods
+      pluginVolumePath: /var/lib/kubelet/plugins
+      # Pod priority class name to use for the node-agent daemonset. Optional.
+      priorityClassName: ""
+      # Pod runtime class name to use for the node-agent daemonset. Optional.
+      runtimeClassName: ""
+      # Resource requests/limits to specify for the node-agent daemonset deployment. Optional.
+      # https://velero.io/docs/v1.6/customize-installation/#customize-resource-requests-and-limits
+      resources: {}
+        # requests:
+        #   cpu: 500m
+        #   memory: 512Mi
+        # limits:
+        #   cpu: 1000m
+        #   memory: 1024Mi

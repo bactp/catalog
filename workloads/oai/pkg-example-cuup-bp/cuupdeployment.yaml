@@ -1,0 +1,39 @@
+apiVersion: workload.nephio.org/v1alpha1
+kind: NFDeployment
+metadata:
+  name: cuup-edge
+  namespace: oai-ran-cuup
+spec:
+  provider: cuup.openairinterface.org
+  interfaces:
+  - name: n3
+    ipv4:
+      address: 192.168.1.150/24 #CUUP_N3_IP
+      gateway: 192.168.1.1 #CUUP_N3_GW
+  - name: f1u
+    ipv4:
+      address: 192.168.10.50/24 #CUUP_F1U_IP
+      gateway: 192.168.10.1 #CUUP_F1U_GW
+  - name: e1
+    ipv4:
+      address: 192.168.11.60/24 #CUUP_E1_IP
+      gateway: 192.168.11.1 #CUUP_E1_GW
+  networkInstances:
+  - name: vpc-ran
+    interfaces:
+    - n3
+  - name: vpc-cudu-f1
+    interfaces:
+    - f1u
+  - name: vpc-cu-e1
+    interfaces:
+    - e1
+  parametersRefs:
+  - name: cuup-nf-config
+    apiVersion: workload.nephio.org/v1alpha1
+    kind: NFConfig
+    namespace: oai-ran-cuup
+  - apiVersion: ref.nephio.org/v1alpha1
+    kind: Config
+    name: oai-cucp-config
+    namespace: oai-ran-cuup

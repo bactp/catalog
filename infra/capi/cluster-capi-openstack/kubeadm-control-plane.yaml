@@ -1,0 +1,38 @@
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: example-control-plane
+  namespace: default
+spec:
+  kubeadmConfigSpec:
+    clusterConfiguration:
+      apiServer:
+        extraArgs:
+          cloud-provider: external
+      controllerManager:
+        extraArgs:
+          cloud-provider: external
+    preKubeadmCommands:
+    - |
+      # Get the primary local IP
+      LOCAL_IP=$(hostname -I | awk '{print $1}')
+
+      # Persist kubelet args
+      echo "KUBELET_EXTRA_ARGS=--node-ip=$LOCAL_IP --cloud-provider=external" > /etc/default/kubelet
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          provider-id: openstack:///'{{ instance_id }}'
+        name: '{{ local_hostname }}'
+    joinConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          provider-id: openstack:///'{{ instance_id }}'
+        name: '{{ local_hostname }}'
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      kind: OpenStackMachineTemplate
+      name: example-control-plane
+  replicas: 1
+  version: v1.32.0

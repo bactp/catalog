@@ -1,0 +1,15 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSMachineTemplate
+metadata:
+  name: aws-nephio-control-plane
+  namespace: default
+spec:
+  template:
+    spec:
+      ami:
+        id: ami-0e59779a198a7aa0e
+      iamInstanceProfile: control-plane.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: t3.large
+      sshKeyName: mynephio2025
+      rootVolume:
+        size: 100

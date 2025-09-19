@@ -1,0 +1,18 @@
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: example-backup
+  namespace: velero
+  labels:
+    gitops-managed: "true"
+spec:
+  csiSnapshotTimeout: 10m0s
+  defaultVolumesToFsBackup: true
+  hooks: {}
+  includedNamespaces:
+  - wordpress
+  itemOperationTimeout: 4h0m0s
+  metadata: {}
+  snapshotMoveData: false
+  storageLocation: default
+  ttl: 720h0m0s

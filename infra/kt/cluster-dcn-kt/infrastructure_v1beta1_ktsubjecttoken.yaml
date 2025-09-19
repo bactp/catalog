@@ -1,0 +1,12 @@
+apiVersion: infrastructure.dcnlab.ssu.ac.kr/v1beta1
+kind: KTSubjectToken
+metadata:
+  labels:
+    app.kubernetes.io/name: kt-cloud-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: kt-cluster1
+spec:
+  subjectToken: gAAAAABof0oH5L1YTbQLfJi_5tKCGj1ggQ6zn3q9qciUAgRELoP_45ceFUfMuwR3iYZARYs9xSnxZDOusFdg-lmc6hR51L50EXCrjdwZA8MWB7HgjHyBLWpzzfVT_xCSVr_rl0UaqR4FCIduNDfWzIGR2b-c6-kaLg_Hwh0VFnpjOqV5zy_thO8
+  token:
+    expiresAt: "2026-12-18T03:47:08.000000Z"
+

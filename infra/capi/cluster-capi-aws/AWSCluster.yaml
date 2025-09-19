@@ -1,0 +1,23 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
+kind: AWSCluster
+metadata:
+  name: aws-nephio
+  namespace: default
+spec:
+  controlPlaneLoadBalancer:
+    healthCheckProtocol: HTTPS
+    loadBalancerType: nlb
+  region: ap-southeast-1
+  sshKeyName: mynephio2025
+  network:
+    vpc:
+      id: vpc-0b8dcfcb05f812364
+    subnets:
+    - id: subnet-076cb0566274ec802
+    - id: subnet-012968599b8a5c702
+    securityGroupOverrides:
+      controlplane: sg-0a33deac4bb927774
+      node: sg-0a33deac4bb927774
+      apiserver-lb: sg-0a33deac4bb927774
+      lb: sg-0a33deac4bb927774
+      bastion: sg-0a33deac4bb927774
