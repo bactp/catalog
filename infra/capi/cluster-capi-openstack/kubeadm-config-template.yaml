@@ -39,6 +39,6 @@ spec:
       files: []
       joinConfiguration:
         nodeRegistration:
-          name: ""
+          name: '{{ local_hostname }}'
           kubeletExtraArgs:
             provider-id: openstack:///'{{ instance_id }}'

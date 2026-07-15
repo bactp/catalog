@@ -45,5 +45,8 @@ source: |-
               r["metadata"]["name"] = new_cluster_name + "-control-plane"
             if r["metadata"]["name"] == "example-md-0":
               r["metadata"]["name"] = new_cluster_name + "-md-0"
+          if krmfn.match_gvk(r, "addons.cluster.x-k8s.io/v1beta1", "ClusterResourceSet"):
+            if r["metadata"]["name"] == "crs-occm":
+              r["metadata"]["name"] = new_cluster_name + "-crs-occm"
 
   set_values(ctx.resource_list["items"])
